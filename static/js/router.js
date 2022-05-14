@@ -1,8 +1,12 @@
 import {
-    barButtonClicked,
-    categoriesBarButtonState,
-    transactionsBarButtonState
+    barButtonClicked
 } from "./all.js";
+
+// import {
+//     categoriesBarButtonState,
+//     transactionsBarButtonState,
+//     currentBarHolder
+// } from "./states.js";
 
 function redirect_to(arg) {
     fetch("http://127.0.0.1:8000" + arg)
@@ -19,8 +23,13 @@ function redirect_to(arg) {
                     document.getElementById('idNavOverview')
                         .addEventListener("click",() => router.loadRoute('/overview/'));
 
-                    console.log(categoriesBarButtonState)
-                    barButtonClicked(categoriesBarButtonState)
+                    if (arg.includes('transactions')) {
+                        window.currentBarHolder = 'Transactions'
+                        barButtonClicked(window.transactionsBarButtonState)
+                    } else if (arg.includes('categories')) {
+                        window.currentBarHolder = 'Categories'
+                        barButtonClicked(window.categoriesBarButtonState)
+                    }
 
                     // const scripts = otherDoc.getElementsByTagName('script')
                     // for(let i = 0; i < scripts.length; i++)
@@ -59,3 +68,11 @@ document.getElementById('idNavCategories')
 
 document.getElementById('idNavOverview')
     .addEventListener("click",() => router.loadRoute('/overview/'));
+
+window.addEventListener('load', () => {
+    const location = document.URL
+    console.log('location', location)
+
+    const route = `/${location.split('/').slice((3)).join('/')}`
+    router.loadRoute(route)
+})

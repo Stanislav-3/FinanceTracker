@@ -29,7 +29,7 @@ def get_categories_by_type(request):
     result = {'items': []}
 
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        button = json.load(request)['button']
+        button = json.load(request)['buttonName']
 
         for category in Category.objects.all():
             if category.type == button:

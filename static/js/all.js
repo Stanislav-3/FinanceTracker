@@ -1,8 +1,14 @@
+// import {
+//     categoriesBarButtonState,
+//     transactionsBarButtonState,
+//     currentBarHolder
+// } from "./states.js";
+
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
         let cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
+        for (let i = 0; i < cookies.length; i++) {
             let cookie = jQuery.trim(cookies[i]);
             if (cookie.substring(0, name.length + 1) === (name + '=')) {
                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
@@ -13,9 +19,6 @@ function getCookie(name) {
     return cookieValue;
 }
 
-export let categoriesBarButtonState = 'Expenses'
-export let transactionsBarButtonState = 'Expenses'
-
 export function barButtonClicked(button) {
     const expensesButton = document.getElementById('idExpensesButton')
     const incomeButton = document.getElementById('idIncomeButton')
@@ -24,12 +27,12 @@ export function barButtonClicked(button) {
     incomeButton.addEventListener("click",() => barButtonClicked('Income'));
 
     if (button === 'Expenses') {
-        if (document.URL.includes('transactions')) {
-            transactionsBarButtonState = 'Expenses'
+        if (currentBarHolder === "Transactions") {
+            window.transactionsBarButtonState = 'Expenses'
             console.log('transactions')
         }
-        else if (document.URL.includes('categories')) {
-            categoriesBarButtonState = 'Expenses'
+        else if (currentBarHolder === "Categories") {
+            window.categoriesBarButtonState = 'Expenses'
             console.log('categories')
         }
 
@@ -42,12 +45,12 @@ export function barButtonClicked(button) {
 
         incomeButton.style.borderBottomStyle = 'none';
     } else if (button === 'Income') {
-        if (document.URL.includes('transactions')) {
-            transactionsBarButtonState = 'Income'
+        if (currentBarHolder === "Transactions") {
+            window.transactionsBarButtonState = 'Income'
             console.log('transactions')
         }
-        else if (document.URL.includes('categories')) {
-            categoriesBarButtonState = 'Income'
+        else if (currentBarHolder === "Categories") {
+            window.categoriesBarButtonState = 'Income'
             console.log('categories')
         }
 
@@ -61,13 +64,23 @@ export function barButtonClicked(button) {
         expensesButton.style.borderBottomStyle = 'none';
     }
 
-    updateItems()
+    updateItems(window.currentBarHolder)
 }
 
 
-
-function updateItems(url, buttonName, buttonState) {
-    fetch('get_categories_by_type', {
+function updateItems(currentBarHolder) {
+    let url = undefined
+    let buttonName = undefined
+    let buttonState = undefined
+    if (currentBarHolder === "Transactions") {
+            url = 'get_transactions_by_type'
+            buttonState = window.transactionsBarButtonState
+        }
+    else if (currentBarHolder === "Categories") {
+            url = 'get_categories_by_type'
+            buttonState = window.categoriesBarButtonState
+    }
+    fetch(url, {
         method: 'post',
         credentials: "same-origin",
         headers: {
@@ -77,7 +90,7 @@ function updateItems(url, buttonName, buttonState) {
             "X-CSRFToken": getCookie("csrftoken")
         },
          body: JSON.stringify({
-             'categoriesBarButtonState': categoriesBarButtonState
+             "buttonName": buttonState
          })
         }).then(response => {
             response.json().then(
@@ -86,12 +99,19 @@ function updateItems(url, buttonName, buttonState) {
                     const itemsContainer = document.getElementById('idItems')
                     const itemContainer = document.getElementById('idItem')
                     const imgContainer = itemContainer.querySelector('#idItemImage')
-                    const pContainer = itemContainer.querySelector('#idItemName')
+                    const nameContainer = itemContainer.querySelector('#idItemName')
+                    let priceContainer = undefined
+                    if (window.currentBarHolder == "Transactions") {
+                        priceContainer = itemContainer.querySelector('#idItemPrice')
+                    }
 
                     itemsContainer.innerHTML = ""
                     for (let i = 0; i < items.length; i++) {
-                        pContainer.textContent = items[i]['name']
+                        nameContainer.textContent = items[i]['name']
                         imgContainer.src = items[i]['image_name']
+                        if (priceContainer !== undefined) {
+                            priceContainer.textContent = items[i]['amount']
+                        }
                         itemsContainer.append(itemContainer.cloneNode(true))
                     }
                 }
@@ -99,4 +119,9 @@ function updateItems(url, buttonName, buttonState) {
         })
 }
 
-barButtonClicked(categoriesBarButtonState)
+if (window.currentBarHolder === "Transactions") {
+    barButtonClicked(transactionsBarButtonState)
+}
+else if (window.currentBarHolder === "Categories") {
+    barButtonClicked(categoriesBarButtonState)
+}
