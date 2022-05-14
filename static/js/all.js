@@ -13,14 +13,25 @@ function getCookie(name) {
     return cookieValue;
 }
 
-let categoryBarButtonState = 'Expenses'
+export let categoriesBarButtonState = 'Expenses'
+export let transactionsBarButtonState = 'Expenses'
 
-function barButtonClicked(button) {
-    const expensesButton = document.getElementById('expensesButton')
-    const incomeButton = document.getElementById('incomeButton')
+export function barButtonClicked(button) {
+    const expensesButton = document.getElementById('idExpensesButton')
+    const incomeButton = document.getElementById('idIncomeButton')
+
+    expensesButton.addEventListener("click",() => barButtonClicked('Expenses'));
+    incomeButton.addEventListener("click",() => barButtonClicked('Income'));
 
     if (button === 'Expenses') {
-        categoryBarButtonState = 'Expenses'
+        if (document.URL.includes('transactions')) {
+            transactionsBarButtonState = 'Expenses'
+            console.log('transactions')
+        }
+        else if (document.URL.includes('categories')) {
+            categoriesBarButtonState = 'Expenses'
+            console.log('categories')
+        }
 
         expensesButton.style.color = '#32cd32';
         incomeButton.style.color = 'black';
@@ -31,7 +42,14 @@ function barButtonClicked(button) {
 
         incomeButton.style.borderBottomStyle = 'none';
     } else if (button === 'Income') {
-        categoryBarButtonState = 'Income'
+        if (document.URL.includes('transactions')) {
+            transactionsBarButtonState = 'Income'
+            console.log('transactions')
+        }
+        else if (document.URL.includes('categories')) {
+            categoriesBarButtonState = 'Income'
+            console.log('categories')
+        }
 
         expensesButton.style.color='black';
         incomeButton.style.color='#32cd32';
@@ -43,6 +61,12 @@ function barButtonClicked(button) {
         expensesButton.style.borderBottomStyle = 'none';
     }
 
+    updateItems()
+}
+
+
+
+function updateItems(url, buttonName, buttonState) {
     fetch('get_categories_by_type', {
         method: 'post',
         credentials: "same-origin",
@@ -53,7 +77,7 @@ function barButtonClicked(button) {
             "X-CSRFToken": getCookie("csrftoken")
         },
          body: JSON.stringify({
-             'button': categoryBarButtonState
+             'categoriesBarButtonState': categoriesBarButtonState
          })
         }).then(response => {
             response.json().then(
@@ -65,7 +89,7 @@ function barButtonClicked(button) {
                     const pContainer = itemContainer.querySelector('#idItemName')
 
                     itemsContainer.innerHTML = ""
-                    for (i = 0; i < items.length; i++) {
+                    for (let i = 0; i < items.length; i++) {
                         pContainer.textContent = items[i]['name']
                         imgContainer.src = items[i]['image_name']
                         itemsContainer.append(itemContainer.cloneNode(true))
@@ -75,17 +99,4 @@ function barButtonClicked(button) {
         })
 }
 
-barButtonClicked(categoryBarButtonState)
-
-// document.querySelector("#replacer").addEventListener("click", () => {
-//     fetch("transactions")
-//         .then((response) => response.text())
-//         .then((text) => {
-//             const otherDoc = document.implementation.createHTMLDocument('title').documentElement;
-//             otherDoc.innerHTML = text;
-//             document.querySelector("#idMain").innerHTML
-//                 = otherDoc.querySelector("#idTransactionsMain").innerHTML;
-//         });
-// });
-
-window.history.pushState({ data: 'some data' },'Some history entry title', '/some-path');
+barButtonClicked(categoriesBarButtonState)

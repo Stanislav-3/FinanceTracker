@@ -9,7 +9,7 @@
 
 
 
-<body>
+<body id="idBody">
 <header>
     <label for="toggle"> &#9776 </label>
     <input type="checkbox" id="toggle"/>
@@ -20,16 +20,18 @@
         <p> Menu: </p>
         <nav>
             <ul>
-                <li><a href="/transactions"> Transactions </a></li>
-                <li><a href="/categories"> Categories </a></li>
-                <li><a href="/overview"> Overview </a></li>
+                <li><a id="idNavTransaction"> Transactions </a></li>
+                <li><a id="idNavCategories"> Categories </a></li>
+                <li><a id="idNavOverview"> Overview </a></li>
             </ul>
         </nav>
     </div>
     <div class="main_div">
         <div class="bar">
-            <button onclick="barButtonClicked('Expenses')" id="expensesButton"> Expenses </button>
-            <button onclick="barButtonClicked('Income')" id="incomeButton"> Income </button>
+{#            <button onclick="barButtonClicked('Expenses')" id="expensesButton"> Expenses </button>#}
+{#            <button onclick="barButtonClicked('Income')" id="incomeButton"> Income </button>#}
+            <button id="idExpensesButton"> Expenses </button>
+            <button id="idIncomeButton"> Income </button>
         </div>
         <div class="items" id="idItems">
                 <div class="item" id="idItem">
@@ -67,6 +69,7 @@
     </button>
 </footer>
 
-<script src="{% static 'js/all.js'%}"> </script>
+<script type="module" src="{% static 'js/all.js'%}"> </script>
+<script type="module" src="{% static 'js/router.js'%}"> </script>
 </body>
 </html>

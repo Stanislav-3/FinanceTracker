@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 
-def show_categories_page(request):
+def get_categories_page(request):
     categories = Category.objects.all()
 
     context = {
@@ -20,8 +20,8 @@ def show_categories_page(request):
     return render(request, 'categories.html', context=context)
 
 
-def show_edit_page(request):
-    return render(request, 'editCategories.html')
+# def show_edit_page(request):
+#     return render(request, 'editCategories.html')
 
 
 @csrf_exempt
