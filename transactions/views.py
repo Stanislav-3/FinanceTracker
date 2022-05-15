@@ -28,5 +28,19 @@ def get_transactions_by_type(request):
                     'amount': transaction.amount,
                     'name': transaction.label.name,
                 })
-
+    print(result)
     return JsonResponse(result)
+
+
+@csrf_exempt
+def delete_transaction(request):
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        props = json.load(request)
+        name = props['name']
+        amount = props['amount']
+
+        for transaction in Transaction.objects.filter(amount=amount):
+            if transaction.label.name == name:
+                transaction.delete()
+
+    return JsonResponse({})

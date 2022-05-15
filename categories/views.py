@@ -42,6 +42,12 @@ def get_categories_by_type(request):
 
 
 @csrf_exempt
-def get_current_bar_button_state(request):
-    pass
+def delete_category(request):
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        name = json.load(request)['name']
+
+        Category.objects.filter(name=name).delete()
+
+    return JsonResponse({})
+
 

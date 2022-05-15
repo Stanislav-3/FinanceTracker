@@ -2,11 +2,6 @@ import {
     barButtonClicked
 } from "./all.js";
 
-// import {
-//     categoriesBarButtonState,
-//     transactionsBarButtonState,
-//     currentBarHolder
-// } from "./states.js";
 
 function redirect_to(arg) {
     fetch("http://127.0.0.1:8000" + arg)
@@ -16,6 +11,18 @@ function redirect_to(arg) {
                     otherDoc.innerHTML = text;
                     document.body.innerHTML = otherDoc.querySelector('#idBody').innerHTML
 
+                    // let regroupButton = document.getElementById("idItemRegroup")
+                    // // regroupButton = regroupButton.parentElement.parentElement.parentElement
+                    // // const regroupButton = document.querySelector('#idItemRegroup')
+                    // console.log(regroupButton)
+                    // if (regroupButton !== null) {
+                    //     regroupButton.style.backgroundColor = 'yellow'
+                    //     regroupButton.addEventListener("click",e => console.log(e));
+                    //
+                    // }
+                    // document.getElementById('idItemDelete')
+                    //     .addEventListener("click",() => alert(2));
+
                     document.getElementById('idNavTransaction')
                         .addEventListener("click",() => router.loadRoute('/transactions/'));
                     document.getElementById('idNavCategories')
@@ -23,6 +30,8 @@ function redirect_to(arg) {
                     document.getElementById('idNavOverview')
                         .addEventListener("click",() => router.loadRoute('/overview/'));
 
+
+                    console.log('in redirect_to()')
                     if (arg.includes('transactions')) {
                         window.currentBarHolder = 'Transactions'
                         barButtonClicked(window.transactionsBarButtonState)
@@ -52,7 +61,6 @@ class Router {
 
   loadRoute(...urlSegments) {
     const url = `${urlSegments.join('/')}`;
-    console.log('url', url)
 
     history.pushState({}, '', url);
     redirect_to(url)
@@ -60,18 +68,17 @@ class Router {
 }
 
 const router = new Router(routes);
-document.getElementById('idNavTransaction')
-    .addEventListener("click",() => router.loadRoute('/transactions/'));
-
-document.getElementById('idNavCategories')
-    .addEventListener("click",() => router.loadRoute('/categories/'));
-
-document.getElementById('idNavOverview')
-    .addEventListener("click",() => router.loadRoute('/overview/'));
+// document.getElementById('idNavTransaction')
+//     .addEventListener("click",() => router.loadRoute('/transactions/'));
+//
+// document.getElementById('idNavCategories')
+//     .addEventListener("click",() => router.loadRoute('/categories/'));
+//
+// document.getElementById('idNavOverview')
+//     .addEventListener("click",() => router.loadRoute('/overview/'));
 
 window.addEventListener('load', () => {
     const location = document.URL
-    console.log('location', location)
 
     const route = `/${location.split('/').slice((3)).join('/')}`
     router.loadRoute(route)

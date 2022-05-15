@@ -1,9 +1,3 @@
-// import {
-//     categoriesBarButtonState,
-//     transactionsBarButtonState,
-//     currentBarHolder
-// } from "./states.js";
-
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -19,6 +13,7 @@ function getCookie(name) {
     return cookieValue;
 }
 
+
 export function barButtonClicked(button) {
     const expensesButton = document.getElementById('idExpensesButton')
     const incomeButton = document.getElementById('idIncomeButton')
@@ -29,11 +24,9 @@ export function barButtonClicked(button) {
     if (button === 'Expenses') {
         if (currentBarHolder === "Transactions") {
             window.transactionsBarButtonState = 'Expenses'
-            console.log('transactions')
         }
         else if (currentBarHolder === "Categories") {
             window.categoriesBarButtonState = 'Expenses'
-            console.log('categories')
         }
 
         expensesButton.style.color = '#32cd32';
@@ -101,27 +94,69 @@ function updateItems(currentBarHolder) {
                     const imgContainer = itemContainer.querySelector('#idItemImage')
                     const nameContainer = itemContainer.querySelector('#idItemName')
                     let priceContainer = undefined
-                    if (window.currentBarHolder == "Transactions") {
-                        priceContainer = itemContainer.querySelector('#idItemPrice')
+                    if (window.currentBarHolder === "Transactions") {
+                        priceContainer = itemContainer.querySelector('#idItemAmount')
                     }
-
                     itemsContainer.innerHTML = ""
                     for (let i = 0; i < items.length; i++) {
                         nameContainer.textContent = items[i]['name']
-                        imgContainer.src = items[i]['image_name']
-                        if (priceContainer !== undefined) {
+                        // imgContainer.src = items[i]['image_name']
+                        imgContainer.src = '../static/images/work.jpg'
+                        if (window.currentBarHolder === "Transactions" && priceContainer !== null) {
                             priceContainer.textContent = items[i]['amount']
                         }
-                        itemsContainer.append(itemContainer.cloneNode(true))
+                        const newNode = itemContainer.cloneNode(true)
+                        console.log(newNode)
+                        newNode.querySelector('#idItemEdit')
+                            .addEventListener("click",() => {})
+                        newNode.querySelector('#idItemDelete')
+                            .addEventListener("click",() => {deleteItem(newNode)})
+                        if (window.currentBarHolder === "Categories") {
+                            newNode.querySelector('#idItemRegroup')
+                                .addEventListener("click",() => {})
+                        }
+
+                        itemsContainer.append(newNode)
                     }
                 }
             )
         })
 }
 
-if (window.currentBarHolder === "Transactions") {
-    barButtonClicked(transactionsBarButtonState)
+
+function deleteItem(item) {
+    const typeName = item.querySelector('#idItemName').innerText
+    let amount = 0.
+    let url = 'delete_category'
+
+    if (window.currentBarHolder === "Transactions") {
+        amount = item.querySelector('#idItemAmount').innerText
+        url = 'delete_transaction'
+    }
+
+    fetch(url, {
+        method: 'post',
+        credentials: "same-origin",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            "X-CSRFToken": getCookie("csrftoken")
+        },
+         body: JSON.stringify({
+             "name": typeName,
+             "amount": amount
+         })
+    }).then(response => {
+        console.log()
+        updateItems(window.currentBarHolder)
+    })
 }
-else if (window.currentBarHolder === "Categories") {
-    barButtonClicked(categoriesBarButtonState)
-}
+
+
+// if (window.currentBarHolder === "Transactions") {
+//     barButtonClicked(transactionsBarButtonState)
+// }
+// else if (window.currentBarHolder === "Categories") {
+//     barButtonClicked(categoriesBarButtonState)
+// }
