@@ -1,27 +1,18 @@
 import {
-    barButtonClicked
+    barButtonClicked,
+    saveChanges,
+    initialize
 } from "./all.js";
 
 
 function redirect_to(arg) {
+    // console.log(arg)
     fetch("http://127.0.0.1:8000" + arg)
                 .then((response) => response.text())
                 .then((text) => {
                     const otherDoc = document.implementation.createHTMLDocument('title').documentElement;
                     otherDoc.innerHTML = text;
                     document.body.innerHTML = otherDoc.querySelector('#idBody').innerHTML
-
-                    // let regroupButton = document.getElementById("idItemRegroup")
-                    // // regroupButton = regroupButton.parentElement.parentElement.parentElement
-                    // // const regroupButton = document.querySelector('#idItemRegroup')
-                    // console.log(regroupButton)
-                    // if (regroupButton !== null) {
-                    //     regroupButton.style.backgroundColor = 'yellow'
-                    //     regroupButton.addEventListener("click",e => console.log(e));
-                    //
-                    // }
-                    // document.getElementById('idItemDelete')
-                    //     .addEventListener("click",() => alert(2));
 
                     document.getElementById('idNavTransaction')
                         .addEventListener("click",() => router.loadRoute('/transactions/'));
@@ -30,21 +21,22 @@ function redirect_to(arg) {
                     document.getElementById('idNavOverview')
                         .addEventListener("click",() => router.loadRoute('/overview/'));
 
-
-                    console.log('in redirect_to()')
                     if (arg.includes('transactions')) {
                         window.currentBarHolder = 'Transactions'
                         barButtonClicked(window.transactionsBarButtonState)
+
+                        const buttonFooter = document.getElementById('idFooterButton')
+                        //добавить ссылку на футеркнопку на add (без оргументов)
+                        // чета подумать чтоб потом перекрылась, подтверждением (уже понял что все нормально)
+                        // но мне казалось что тут может быть проблема поэтому оставлю на всякий
+                        buttonFooter.addEventListener('click', () => {})
                     } else if (arg.includes('categories')) {
                         window.currentBarHolder = 'Categories'
                         barButtonClicked(window.categoriesBarButtonState)
                     }
-
-                    // const scripts = otherDoc.getElementsByTagName('script')
-                    // for(let i = 0; i < scripts.length; i++)
-                    // {
-                    //     document.body.appendChild(scripts[i]);
-                    // }
+                    if (arg.includes('edit')) {
+                        initialize(router.optional)
+                    }
             });
 }
 
@@ -57,25 +49,24 @@ const routes = [
 class Router {
   constructor(routes) {
     this.routes = routes;
+    this.optional = undefined
+  }
+
+  load_optional(data) {
+      this.optional = data
   }
 
   loadRoute(...urlSegments) {
-    const url = `${urlSegments.join('/')}`;
+      const url = `${urlSegments.join('/')}`;
+      console.log('url', url)
 
-    history.pushState({}, '', url);
-    redirect_to(url)
+      history.pushState({}, '', url);
+      redirect_to(url)
   }
 }
 
-const router = new Router(routes);
-// document.getElementById('idNavTransaction')
-//     .addEventListener("click",() => router.loadRoute('/transactions/'));
-//
-// document.getElementById('idNavCategories')
-//     .addEventListener("click",() => router.loadRoute('/categories/'));
-//
-// document.getElementById('idNavOverview')
-//     .addEventListener("click",() => router.loadRoute('/overview/'));
+export const router = new Router(routes);
+
 
 window.addEventListener('load', () => {
     const location = document.URL

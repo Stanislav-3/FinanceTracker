@@ -1,3 +1,8 @@
+import {
+    router
+} from "./router.js";
+
+
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -57,7 +62,9 @@ export function barButtonClicked(button) {
         expensesButton.style.borderBottomStyle = 'none';
     }
 
-    updateItems(window.currentBarHolder)
+    if (!document.URL.includes('/edit')) {
+        updateItems(window.currentBarHolder)
+    }
 }
 
 
@@ -66,11 +73,11 @@ function updateItems(currentBarHolder) {
     let buttonName = undefined
     let buttonState = undefined
     if (currentBarHolder === "Transactions") {
-            url = 'get_transactions_by_type'
+            url = "http://127.0.0.1:8000" + '/transactions' + '/get_transactions_by_type'
             buttonState = window.transactionsBarButtonState
         }
     else if (currentBarHolder === "Categories") {
-            url = 'get_categories_by_type'
+            url = "http://127.0.0.1:8000" + '/categories' +'/get_categories_by_type'
             buttonState = window.categoriesBarButtonState
     }
     fetch(url, {
@@ -106,11 +113,16 @@ function updateItems(currentBarHolder) {
                             priceContainer.textContent = items[i]['amount']
                         }
                         const newNode = itemContainer.cloneNode(true)
-                        console.log(newNode)
+
                         newNode.querySelector('#idItemEdit')
-                            .addEventListener("click",() => {})
+                            .addEventListener("click",() => {
+                                router.load_optional(newNode)
+                                router.loadRoute('/' + window.currentBarHolder.toLowerCase() + '/edit')
+                            })
                         newNode.querySelector('#idItemDelete')
-                            .addEventListener("click",() => {deleteItem(newNode)})
+                            .addEventListener("click",() => {
+                                deleteItem(newNode)
+                            })
                         if (window.currentBarHolder === "Categories") {
                             newNode.querySelector('#idItemRegroup')
                                 .addEventListener("click",() => {})
@@ -148,15 +160,70 @@ function deleteItem(item) {
              "amount": amount
          })
     }).then(response => {
-        console.log()
         updateItems(window.currentBarHolder)
     })
 }
 
+export function initialize(node) {
+    const title = document.getElementById("idMainTitle")
+    const submitButton = document.getElementById('idFooterButton')
 
-// if (window.currentBarHolder === "Transactions") {
-//     barButtonClicked(transactionsBarButtonState)
-// }
-// else if (window.currentBarHolder === "Categories") {
-//     barButtonClicked(categoriesBarButtonState)
-// }
+    const type = window.currentBarHolder.toLowerCase()
+
+    let itemNameText = ''
+
+    title.innerText = `Edit ${type}`
+    const icon = submitButton.getElementsByTagName('svg')[0]
+
+    submitButton.innerHTML=''
+    submitButton.appendChild(icon)
+    submitButton.append(` Save ${type}`)
+
+    if (type === 'transactions') {
+
+    } else if (type === 'categories') {
+        const itemName = node.querySelector('#idItemName')
+
+        const nameField = document.getElementById('idName')
+        nameField.value = itemName.innerText
+        itemNameText = itemName.innerText
+    }
+
+    document.getElementById('idFooterButton')
+        .addEventListener("click",() => saveChanges(itemNameText));
+}
+
+export function saveChanges(prevItemName=null) {
+    let parentRoot = '/categories'
+    let url = "http://127.0.0.1:8000" + parentRoot + '/save_edit'
+    const name = document.getElementById('idName').value
+    let image = null
+
+
+    const reader = new FileReader()
+    reader.addEventListener("load", () => {
+        image = reader.result
+
+        fetch(url, {
+        method: 'post',
+        credentials: "same-origin",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            "X-CSRFToken": getCookie("csrftoken")
+        },
+         body: JSON.stringify({
+             "prevItemName": prevItemName,
+             "name": name,
+             "image": image,
+             "type": window.categoriesBarButtonState
+         })
+        }).then(response => {
+            response.json().then( () => {
+                router.loadRoute(parentRoot)
+            })
+        })
+    })
+    reader.readAsDataURL(document.getElementById('idImage').files[0])
+}
