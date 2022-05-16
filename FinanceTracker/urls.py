@@ -21,4 +21,5 @@ urlpatterns = [
     path('categories/', include('categories.urls')),
     path('transactions/', include('transactions.urls')),
     path('overview/', include('overview.urls')),
+    # path('static/images/*.jpg', views.return_image)
 ]

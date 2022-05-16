@@ -95,8 +95,9 @@ function updateItems(currentBarHolder) {
                     itemsContainer.innerHTML = ""
                     for (let i = 0; i < items.length; i++) {
                         nameContainer.textContent = items[i]['name']
-                        // imgContainer.src = items[i]['image_name']
-                        imgContainer.src = '../static/images/work.jpg'
+                        imgContainer.src = "http://127.0.0.1:8000/" + items[i]['image_name']
+                        console.log(imgContainer.src)
+
                         if (window.currentBarHolder === "Transactions" && priceContainer !== null) {
                             priceContainer.textContent = items[i]['amount']
                         }

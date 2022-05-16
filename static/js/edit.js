@@ -69,7 +69,7 @@ export function initialize(node) {
     if (node === undefined) {
         document.getElementById('idFooterButton')
             .addEventListener("click",() =>
-                saveChanges(currentParentUrl, ''));
+                saveChanges(currentParentUrl, {}));
         return
     }
 
@@ -83,6 +83,7 @@ export function initialize(node) {
     footerButton.append(` Save ${type}`)
 
     let props = {}
+    console.log('initialize', type)
     if (type === 'transactions') {
         const amountInput = document.getElementById('idAmount')
         const categorySelect = document.getElementById('idCategory')
@@ -105,11 +106,12 @@ export function initialize(node) {
         const nameField = document.getElementById('idName')
         nameField.value = itemName.innerText
 
-        props = {'itemNameText' : itemName.innerText}
+        props = {'prevItemName' : itemName.innerText}
     }
 
+    console.log('initialize', props)
     document.getElementById('idFooterButton')
-        .addEventListener("click",() => saveChanges(`/${currentParentUrl}`, props));
+        .addEventListener("click",() => saveChanges(currentParentUrl, props));
 }
 
 
@@ -135,7 +137,11 @@ export function saveChanges(parentRootUrl = '', props =null) {
     }
 
     if (window.currentBarHolder === 'Categories') {
-        const prevItemName = props['prevItemName']
+        let prevItemName = props['prevItemName']
+        if (prevItemName === undefined) {
+            prevItemName = null
+        }
+
         const reader = new FileReader()
         const name = document.getElementById('idName').value
         let image = null

@@ -37,7 +37,7 @@ function redirect_to(arg) {
                             document.getElementById('idFooterButton')
                                 .addEventListener('click', () => {
                                     router.optional = undefined
-                                    router.loadRoute('/categories/edit')
+                                    router.loadRoute('/transactions/edit')
                             })
                         }
                     } else if (arg.includes('categories')) {

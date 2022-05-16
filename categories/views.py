@@ -58,6 +58,7 @@ def delete_category(request):
 def save_edit(request):
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         props = json.load(request)
+        print(props.keys)
         prevName = props['prevItemName']
         name = props['name']
         image = props['image'].split('base64,')[1]
@@ -68,16 +69,14 @@ def save_edit(request):
         with open(img_path, 'wb') as file:
             file.write(a2b_base64(image))
 
-        print('prevName', prevName)
         category = Category.objects.filter(name=prevName)
         if category.count() == 0:
-            print('new')
             Category.objects.create(name=name, image=ImageFile(open(img_path, 'rb')), type=type_)
+            os.remove(img_path)
         else:
-            print('update')
-            category.update(name=name, image=ImageFile(open(img_path, 'rb')), type=type_)
-
-        os.remove(img_path)
+            new_img_path = 'static/images/' + img_path
+            os.rename(img_path, new_img_path)
+            category.update(name=name, image=ImageFile(open(new_img_path, 'rb')), type=type_)
 
     return JsonResponse({})
 
