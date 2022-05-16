@@ -63,12 +63,12 @@ def save_edit(request):
         amount = props['amount']
         label = props['label']
         type = props['type']
-        print(props)
         year, month, day = map(int, props['date'].split('-'))
         information = props['information']
 
         transaction = Transaction.objects.filter(amount=prevAmount)\
-            .filter(label=Category.objects.all().filter(type=prevLabel)[0])
+            .filter(label=Category.objects.all().filter(name=prevLabel)[0])
+
         if transaction.count() == 0:
             print('new')
             Transaction.objects.create(amount=amount,
