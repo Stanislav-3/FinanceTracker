@@ -228,15 +228,17 @@ nav ul li :active {
     position: relative;
     border: solid 1px;
     width: 100%;
+    max-height: 50%;
     flex-grow: 1;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
+    flex-flow: wrap;
 }
 
 .items .plot canvas {
     border: solid 1px;
-    width: 40%;
+    width: 80%;
     height: 100%;
 }
 
@@ -245,6 +247,12 @@ nav ul li :active {
     width: 40%;
     height: 100%;
     margin: 0 2%;
+}
+
+@media screen and (max-width: 700px) {
+    .items .pies canvas {
+    width: 70%;
+    }
 }
 
 .item {
@@ -307,6 +315,29 @@ header label {
     display: none;
 }
 
+.rmv {
+    display: none;
+}
+
+.hamburgerMenu {
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+.hamburgerMenu p {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.hamburgerMenu a {
+    font-size: 1rem;
+    color: black;
+    text-decoration: None;
+}
+
+
+
 @media only screen and (max-width: 500px) {
     .main_menu {
         display: none;
@@ -316,12 +347,12 @@ header label {
         cursor: pointer;
     }
 
-    #toggle:checked ~ .main_menu {
-        display: block;
-        width: 100%;
-    }
+    /*#toggle:checked ~ .main_menu {*/
+    /*    display: block;*/
+    /*    width: 100%;*/
+    /*}*/
 
-    #toggle:checked ~ footer {
-        display: none;
-    }
+    /*#toggle:checked ~ footer {*/
+    /*    display: none;*/
+    /*}*/
 }

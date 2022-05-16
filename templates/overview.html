@@ -8,13 +8,14 @@
 </head>
 
 
-
 <body id="idBody">
 <header>
+    <label for="toggle"> &#9776 </label>
+    <input type="checkbox" id="toggle" onclick="changeMenuState(this)"/>
     <p> Financial Tracker </p>
 </header>
 <main>
-    <div class="main_menu">
+    <div class="main_menu" id="idMainMenu">
         <p> Menu: </p>
         <nav>
             <ul>
@@ -24,7 +25,7 @@
             </ul>
         </nav>
     </div>
-    <div class="main_div">
+    <div class="main_div" id="idMainDiv">
         <div class="bar">
             <select>
                 <option value="week"> Week </option>
@@ -49,5 +50,7 @@
 <script type="module" src="{% static 'js/edit.js'%}"> </script>
 <script type="module" src="{% static 'js/router.js'%}"> </script>
 <script type="module" src="{% static 'js/states.js'%}"> </script>
+<script type="module" src="{% static 'js/overview.js'%}"> </script>
+<script src="{% static 'js/menuManager.js'%}"> </script>
 </body>
 </html>
