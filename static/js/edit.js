@@ -7,7 +7,7 @@ import {
 } from "./cookie.js";
 
 
-function addOptionsToSelect(selectElement, category) {
+export function addOptionsToSelect(selectElement, category=null) {
     const url = "http://127.0.0.1:8000" + "/transactions" + "/edit/get_select_options"
     const props = {
         'type': window.transactionsBarButtonState
@@ -24,13 +24,18 @@ function addOptionsToSelect(selectElement, category) {
              body: JSON.stringify(props)
             }).then(response => {
                 response.json().then((obj) => {
+                    while (selectElement.length > 0) {
+                        selectElement.remove(0);
+                    }
                     const elements = obj['items']
                     for (let i = 0; i < elements.length; i++) {
                         selectElement.add(new Option(elements[i], elements[i]));
                     }
 
-                    selectElement.value = category
-                    selectElement.selectedIndex = elements.indexOf(category)
+                    if (category) {
+                        selectElement.value = category
+                        selectElement.selectedIndex = elements.indexOf(category)
+                    }
                 })
             })
 }
@@ -70,9 +75,14 @@ export function initialize(node) {
         document.getElementById('idFooterButton')
             .addEventListener("click",() =>
                 saveChanges(currentParentUrl, {}));
+
+        if (type === 'transactions') {
+            addOptionsToSelect(document.getElementById('idCategory'))
+        }
         return
     }
 
+    // if editing an existing element
     document.getElementById("idMainTitle").innerText = `Edit ${type}`
 
     const footerButton = document.getElementById('idFooterButton')
@@ -109,15 +119,29 @@ export function initialize(node) {
         props = {'prevItemName' : itemName.innerText}
     }
 
-    console.log('initialize', props)
+    console.log('props in initialize', props)
     document.getElementById('idFooterButton')
-        .addEventListener("click",() => saveChanges(currentParentUrl, props));
+        .addEventListener("click",() => {
+            // if (window.currentBarHolder === "Transactions") {
+            //     const amount = document.getElementById('idAmount').value
+            //     if (window.transactionsBarButtonState === 'Expenses') {
+            //         if (amount >= 0) {
+            //             alert('Warning! Expenses amount should be < 0')
+            //         }
+            //     } else {
+            //         if (amount <= 0) {
+            //             alert('Warning! Income amount should be > 0')
+            //         }
+            //     }
+            // }
+            saveChanges(currentParentUrl, props)
+        });
 }
 
 
-export function saveChanges(parentRootUrl = '', props =null) {
+export function saveChanges(parentRootUrl = '', props) {
     let url = "http://127.0.0.1:8000" + parentRootUrl + '/save_edit'
-
+    console.log('props in saveChanges', props)
     function post_data(url, props) {
         fetch(url, {
             method: 'post',
@@ -149,26 +173,35 @@ export function saveChanges(parentRootUrl = '', props =null) {
         reader.addEventListener("load", () => {
             image = reader.result
 
-            const props = {
+            const _props = {
                 "prevItemName": prevItemName,
                 "name": name,
                 "image": image,
                 "type": window.categoriesBarButtonState
             }
-            post_data(url, props)
+            post_data(url, _props)
         })
         reader.readAsDataURL(document.getElementById('idImage').files[0])
 
-    } else if (window.currentBarHolder === 'Transactions') {
-        const props = {
-            'prevAmount': props['prevAmount'],
-            'prevLabel': props['prevLabel'],
+    } else {
+        let prevAmount = props.prevAmount
+        let prevLabel = props.prevLabel
+        if (prevAmount === undefined) {
+            prevAmount = null
+        }
+        if (prevLabel === undefined) {
+            prevLabel = null
+        }
+        const props_ = {
+            'prevAmount': prevAmount,
+            'prevLabel': prevLabel,
             'amount': document.getElementById('idAmount').value,
             'label': document.getElementById('idCategory').value,
+            'type': window.transactionsBarButtonState,
             'date': document.getElementById('idDate').value,
             'information': document.getElementById('idInformation').value,
         }
 
-        post_data(url, props)
+        post_data(url, props_)
     }
 }

@@ -1,3 +1,5 @@
+import datetime
+
 from django.shortcuts import render
 from django.shortcuts import HttpResponse
 from django.http import JsonResponse
@@ -32,6 +34,7 @@ def get_transactions_by_type(request):
                     'amount': transaction.amount,
                     'name': transaction.label.name,
                 })
+
     print(result)
     return JsonResponse(result)
 
@@ -59,20 +62,27 @@ def save_edit(request):
         prevLabel = props['prevLabel']
         amount = props['amount']
         label = props['label']
-        date = props['date']
+        type = props['type']
+        print(props)
+        year, month, day = map(int, props['date'].split('-'))
         information = props['information']
 
-        transaction = Transaction.objects.filter(amount=prevAmount).filter(type=prevLabel)
+        transaction = Transaction.objects.filter(amount=prevAmount)\
+            .filter(label=Category.objects.all().filter(type=prevLabel)[0])
         if transaction.count() == 0:
+            print('new')
             Transaction.objects.create(amount=amount,
-                                       type=label,
+                                       type=type,
                                        information=information,
-                                       label=Category.objects.filter(name=label))
+                                       date=datetime.date(year, month, day),
+                                       label=Category.objects.filter(name=label)[0])
         else:
+            print('edit')
             transaction.update(amount=amount,
-                               type=label,
+                               type=type,
                                information=information,
-                               label=Category.objects.filter(name=label))
+                               date=datetime.date(year, month, day),
+                               label=Category.objects.filter(name=label)[0])
 
     return JsonResponse({})
 

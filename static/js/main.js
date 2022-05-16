@@ -3,6 +3,11 @@ import {
 } from "./router.js";
 
 import {
+    initialize,
+    addOptionsToSelect
+} from "./edit.js";
+
+import {
     getCookie
 } from "./cookie.js";
 
@@ -33,11 +38,9 @@ export function barButtonClicked(button) {
     } else if (button === 'Income') {
         if (currentBarHolder === "Transactions") {
             window.transactionsBarButtonState = 'Income'
-            console.log('transactions')
         }
         else if (currentBarHolder === "Categories") {
             window.categoriesBarButtonState = 'Income'
-            console.log('categories')
         }
 
         expensesButton.style.color='black';
@@ -52,6 +55,8 @@ export function barButtonClicked(button) {
 
     if (!document.URL.includes('/edit')) {
         updateItems(window.currentBarHolder)
+    } else {
+        addOptionsToSelect(document.getElementById('idCategory'))
     }
 }
 
@@ -83,7 +88,6 @@ function updateItems(currentBarHolder) {
         }).then(response => {
             response.json().then(
                 obj => {
-                    const items = obj['items']
                     const itemsContainer = document.getElementById('idItems')
                     const itemContainer = document.getElementById('idItem')
                     const imgContainer = itemContainer.querySelector('#idItemImage')
@@ -93,10 +97,10 @@ function updateItems(currentBarHolder) {
                         priceContainer = itemContainer.querySelector('#idItemAmount')
                     }
                     itemsContainer.innerHTML = ""
+                    const items = obj['items']
                     for (let i = 0; i < items.length; i++) {
                         nameContainer.textContent = items[i]['name']
                         imgContainer.src = "http://127.0.0.1:8000/" + items[i]['image_name']
-                        console.log(imgContainer.src)
 
                         if (window.currentBarHolder === "Transactions" && priceContainer !== null) {
                             priceContainer.textContent = items[i]['amount']

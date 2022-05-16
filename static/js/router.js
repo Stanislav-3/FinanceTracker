@@ -14,7 +14,6 @@ import {
 
 
 function redirect_to(arg) {
-    // console.log(arg)
     fetch("http://127.0.0.1:8000" + arg)
                 .then((response) => response.text())
                 .then((text) => {
