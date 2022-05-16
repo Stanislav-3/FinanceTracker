@@ -75,3 +75,33 @@ def save_edit(request):
                                label=Category.objects.filter(name=label))
 
     return JsonResponse({})
+
+
+@csrf_exempt
+def get_select_options(request):
+    if request.headers.get("X-Requested-With") != "XMLHttpRequest":
+        return
+
+    type_ = json.load(request)['type']
+    result = {'items': []}
+
+    for category in Category.objects.all():
+        if category.type == type_:
+            result['items'].append(category.name)
+
+    return JsonResponse(result)
+
+
+@csrf_exempt
+def get_inputs_data(request):
+    if request.headers.get("X-Requested-With") != "XMLHttpRequest":
+        return
+
+    props = json.load(request)
+    amount = props['amount']
+    category = props['category']
+
+    obj = Transaction.objects.filter(label=category).filter(amount=amount)
+    result = {'data': obj.date, 'information': obj.information}
+
+    return JsonResponse(result)

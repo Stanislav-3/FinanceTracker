@@ -8,6 +8,7 @@ class Transaction(models.Model):
     type = models.CharField(max_length=8, choices=(('Expenses', 'Expenses'),
                                                    ('Income', 'Income'),)
                             )
+    date = models.DateField()
     information = models.CharField(max_length=100)
 
     def __str__(self):

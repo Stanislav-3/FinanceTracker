@@ -6,27 +6,83 @@ import {
     getCookie
 } from "./cookie.js";
 
-export function initialize(currentParentUrl, node) {
+
+function addOptionsToSelect(selectElement, category) {
+    const url = "http://127.0.0.1:8000" + "/transactions" + "/edit/get_select_options"
+    const props = {
+        'type': window.transactionsBarButtonState
+    }
+    fetch(url, {
+            method: 'post',
+            credentials: "same-origin",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+             body: JSON.stringify(props)
+            }).then(response => {
+                response.json().then((obj) => {
+                    const elements = obj['items']
+                    for (let i = 0; i < elements.length; i++) {
+                        selectElement.add(new Option(elements[i], elements[i]));
+                    }
+
+                    selectElement.value = category
+                    selectElement.selectedIndex = elements.indexOf(category)
+                })
+            })
+}
+
+function initializeDateAndInformationInputs(category, amount, dateInput, informationInput) {
+    const url = "http://127.0.0.1:8000" + "/transactions" + "/edit/get_inputs_data"
+    const props = {
+        'category': category,
+        'amount': amount
+    }
+    fetch(url, {
+            method: 'post',
+            credentials: "same-origin",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+             body: JSON.stringify(props)
+            }).then(response => {
+                response.json().then((obj) => {
+                    const props = obj['items']
+                    dateInput.value = props['date']
+                    informationInput.value = props['information']
+                })
+            })
+}
+
+
+export function initialize(node) {
+    const type = window.currentBarHolder.toLowerCase()
+    const currentParentUrl = `/${type}`
+
+    // if adding new element
     if (node === undefined) {
         document.getElementById('idFooterButton')
             .addEventListener("click",() =>
-                saveChanges(`/${currentParentUrl}`, ''));
+                saveChanges(currentParentUrl, ''));
         return
     }
-    const title = document.getElementById("idMainTitle")
-    const submitButton = document.getElementById('idFooterButton')
 
-    const type = window.currentBarHolder.toLowerCase()
+    document.getElementById("idMainTitle").innerText = `Edit ${type}`
+
+    const footerButton = document.getElementById('idFooterButton')
+    const icon = footerButton.getElementsByTagName('svg')[0]
+
+    footerButton.innerHTML = ''
+    footerButton.appendChild(icon)
+    footerButton.append(` Save ${type}`)
 
     let props = {}
-
-    title.innerText = `Edit ${type}`
-    const icon = submitButton.getElementsByTagName('svg')[0]
-
-    submitButton.innerHTML=''
-    submitButton.appendChild(icon)
-    submitButton.append(` Save ${type}`)
-
     if (type === 'transactions') {
         const amountInput = document.getElementById('idAmount')
         const categorySelect = document.getElementById('idCategory')
@@ -34,11 +90,10 @@ export function initialize(currentParentUrl, node) {
         const informationInput = document.getElementById('idInformation')
 
         const category = node.querySelector('#idItemName').innerText
-        const amount = node.querySelector('#idAmount').innerText
-        // const image = node.querySelector('#idItemImage')
+        const amount = node.querySelector('#idItemAmount').innerText
 
-        categorySelect.value = category
-        amountInput.innerText = amount
+        amountInput.value = amount
+        addOptionsToSelect(categorySelect, category)
 
         props = {
             'prevAmount': node.querySelector('#idItemAmount').innerText,
@@ -56,6 +111,7 @@ export function initialize(currentParentUrl, node) {
     document.getElementById('idFooterButton')
         .addEventListener("click",() => saveChanges(`/${currentParentUrl}`, props));
 }
+
 
 export function saveChanges(parentRootUrl = '', props =null) {
     let url = "http://127.0.0.1:8000" + parentRootUrl + '/save_edit'

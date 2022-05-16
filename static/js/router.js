@@ -53,7 +53,7 @@ function redirect_to(arg) {
                         }
                     }
                     if (arg.includes('edit')) {
-                        initialize(window.currentBarHolder.toLowerCase(), router.optional)
+                        initialize(router.optional)
                     }
             });
 }
