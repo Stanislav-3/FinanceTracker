@@ -1,8 +1,16 @@
 import {
-    barButtonClicked,
+    barButtonClicked
+} from "./main.js";
+
+import {
     saveChanges,
     initialize
-} from "./all.js";
+} from "./edit.js"
+
+import {
+    getCookie
+} from "./cookie.js";
+
 
 
 function redirect_to(arg) {
@@ -25,17 +33,27 @@ function redirect_to(arg) {
                         window.currentBarHolder = 'Transactions'
                         barButtonClicked(window.transactionsBarButtonState)
 
-                        const buttonFooter = document.getElementById('idFooterButton')
-                        //добавить ссылку на футеркнопку на add (без оргументов)
-                        // чета подумать чтоб потом перекрылась, подтверждением (уже понял что все нормально)
-                        // но мне казалось что тут может быть проблема поэтому оставлю на всякий
-                        buttonFooter.addEventListener('click', () => {})
+                        if (!arg.includes('edit')) {
+                            document.getElementById('idFooterButton')
+                                .addEventListener('click', () => {
+                                    router.optional = undefined
+                                    router.loadRoute('/categories/edit')
+                            })
+                        }
                     } else if (arg.includes('categories')) {
                         window.currentBarHolder = 'Categories'
                         barButtonClicked(window.categoriesBarButtonState)
+
+                        if (!arg.includes('edit')) {
+                            document.getElementById('idFooterButton')
+                                .addEventListener('click', () => {
+                                    router.optional = undefined
+                                    router.loadRoute('/categories/edit')
+                            })
+                        }
                     }
                     if (arg.includes('edit')) {
-                        initialize(router.optional)
+                        initialize(window.currentBarHolder.toLowerCase(), router.optional)
                     }
             });
 }

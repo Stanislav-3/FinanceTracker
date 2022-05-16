@@ -2,21 +2,9 @@ import {
     router
 } from "./router.js";
 
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        let cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            let cookie = jQuery.trim(cookies[i]);
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
+import {
+    getCookie
+} from "./cookie.js";
 
 
 export function barButtonClicked(button) {
@@ -139,11 +127,11 @@ function updateItems(currentBarHolder) {
 function deleteItem(item) {
     const typeName = item.querySelector('#idItemName').innerText
     let amount = 0.
-    let url = 'delete_category'
+    let url = "http://127.0.0.1:8000" + '/categories/delete_category'
 
     if (window.currentBarHolder === "Transactions") {
         amount = item.querySelector('#idItemAmount').innerText
-        url = 'delete_transaction'
+        url = "http://127.0.0.1:8000" + '/transactions/delete_transaction'
     }
 
     fetch(url, {
@@ -162,68 +150,4 @@ function deleteItem(item) {
     }).then(response => {
         updateItems(window.currentBarHolder)
     })
-}
-
-export function initialize(node) {
-    const title = document.getElementById("idMainTitle")
-    const submitButton = document.getElementById('idFooterButton')
-
-    const type = window.currentBarHolder.toLowerCase()
-
-    let itemNameText = ''
-
-    title.innerText = `Edit ${type}`
-    const icon = submitButton.getElementsByTagName('svg')[0]
-
-    submitButton.innerHTML=''
-    submitButton.appendChild(icon)
-    submitButton.append(` Save ${type}`)
-
-    if (type === 'transactions') {
-
-    } else if (type === 'categories') {
-        const itemName = node.querySelector('#idItemName')
-
-        const nameField = document.getElementById('idName')
-        nameField.value = itemName.innerText
-        itemNameText = itemName.innerText
-    }
-
-    document.getElementById('idFooterButton')
-        .addEventListener("click",() => saveChanges(itemNameText));
-}
-
-export function saveChanges(prevItemName=null) {
-    let parentRoot = '/categories'
-    let url = "http://127.0.0.1:8000" + parentRoot + '/save_edit'
-    const name = document.getElementById('idName').value
-    let image = null
-
-
-    const reader = new FileReader()
-    reader.addEventListener("load", () => {
-        image = reader.result
-
-        fetch(url, {
-        method: 'post',
-        credentials: "same-origin",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-            "X-CSRFToken": getCookie("csrftoken")
-        },
-         body: JSON.stringify({
-             "prevItemName": prevItemName,
-             "name": name,
-             "image": image,
-             "type": window.categoriesBarButtonState
-         })
-        }).then(response => {
-            response.json().then( () => {
-                router.loadRoute(parentRoot)
-            })
-        })
-    })
-    reader.readAsDataURL(document.getElementById('idImage').files[0])
 }

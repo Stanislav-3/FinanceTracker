@@ -4,14 +4,18 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import Transaction
+from transactions.models import Category
+from binascii import a2b_base64
+from django.core.files.images import ImageFile
+import os
 
 
 def get_transactions_page(request):
     return render(request, 'transactions.html')
-#
-#
-# def show_edit_page(request):
-#     return render(request, 'editTransaction.html')
+
+
+def get_edit_page(request):
+    return render(request, 'editTransaction.html')
 
 
 @csrf_exempt
@@ -42,5 +46,32 @@ def delete_transaction(request):
         for transaction in Transaction.objects.filter(amount=amount):
             if transaction.label.name == name:
                 transaction.delete()
+
+    return JsonResponse({})
+
+
+@csrf_exempt
+def save_edit(request):
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        props = json.load(request)
+
+        prevAmount = props['prevAmount']
+        prevLabel = props['prevLabel']
+        amount = props['amount']
+        label = props['label']
+        date = props['date']
+        information = props['information']
+
+        transaction = Transaction.objects.filter(amount=prevAmount).filter(type=prevLabel)
+        if transaction.count() == 0:
+            Transaction.objects.create(amount=amount,
+                                       type=label,
+                                       information=information,
+                                       label=Category.objects.filter(name=label))
+        else:
+            transaction.update(amount=amount,
+                               type=label,
+                               information=information,
+                               label=Category.objects.filter(name=label))
 
     return JsonResponse({})
