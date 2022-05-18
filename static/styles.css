@@ -236,17 +236,22 @@ nav ul li :active {
     flex-flow: wrap;
 }
 
-.items .plot canvas {
-    border: solid 1px;
+.items .plot div {
     width: 80%;
     height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.items .pies canvas {
-    border: solid 1px;
+
+.items .pies div {
     width: 40%;
     height: 100%;
     margin: 0 2%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 @media screen and (max-width: 700px) {

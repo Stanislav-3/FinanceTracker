@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "css.gg": "^2.0.0"
+    "css.gg": "^2.0.0",
+    "jscharting": "^3.3.1"
   }
 }

@@ -11,6 +11,10 @@ import {
     getCookie
 } from "./cookie.js";
 
+import {
+    plot
+} from "./overview.js"
+
 
 
 function redirect_to(arg) {
@@ -53,6 +57,9 @@ function redirect_to(arg) {
                     }
                     if (arg.includes('edit')) {
                         initialize(router.optional)
+                    }
+                    if (arg.includes('overview')) {
+                        plot()
                     }
             });
 }

@@ -34,18 +34,19 @@
         </div>
         <div class="items">
             <div class="plot">
-                <canvas> </canvas>
+                <div id="idMainPlot"> </div>
             </div>
 
             <div class="pies">
-                <canvas> pie chart there </canvas>
-                <canvas> pie chart there </canvas>
+                <div id="idExpensesPie"> </div>
+                <div id="idIncomePie"> </div>
             </div>
         </div>
     </div>
 
 
 </main>
+<script src="https://code.jscharting.com/latest/jscharting.js"></script>
 <script type="module" src="{% static 'js/main.js'%}"> </script>
 <script type="module" src="{% static 'js/edit.js'%}"> </script>
 <script type="module" src="{% static 'js/router.js'%}"> </script>
@@ -53,4 +54,5 @@
 <script type="module" src="{% static 'js/overview.js'%}"> </script>
 <script src="{% static 'js/menuManager.js'%}"> </script>
 </body>
+
 </html>
