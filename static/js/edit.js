@@ -8,7 +8,7 @@ import {
 
 
 export function addOptionsToSelect(selectElement, category=null) {
-    const url = "http://127.0.0.1:8000" + "/transactions" + "/edit/get_select_options"
+    const url = window.path + "/transactions" + "/edit/get_select_options"
     const props = {
         'type': window.transactionsBarButtonState
     }
@@ -41,7 +41,7 @@ export function addOptionsToSelect(selectElement, category=null) {
 }
 
 function initializeDateAndInformationInputs(category, amount, dateInput, informationInput) {
-    const url = "http://127.0.0.1:8000" + "/transactions" + "/edit/get_inputs_data"
+    const url = window.path + "/transactions" + "/edit/get_inputs_data"
     const props = {
         'category': category,
         'amount': amount
@@ -205,7 +205,7 @@ function post_data(parentRootUrl, url, props) {
 
 
 export function saveChanges(parentRootUrl = '', props) {
-    let url = "http://127.0.0.1:8000" + parentRootUrl + '/save_edit'
+    let url = window.path + parentRootUrl + '/save_edit'
 
     if (window.currentBarHolder === 'Categories') {
         let prevItemName = props['prevItemName']

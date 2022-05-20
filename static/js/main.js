@@ -75,7 +75,7 @@ function fillItems(obj) {
     const items = obj['items']
     for (let i = 0; i < items.length; i++) {
         nameContainer.textContent = items[i]['name']
-        imgContainer.src = "http://127.0.0.1:8000/" + items[i]['image_name']
+        imgContainer.src = window.path + '/' + items[i]['image_name']
 
         if (window.currentBarHolder === "Transactions" && priceContainer !== null) {
             priceContainer.textContent = items[i]['amount']
@@ -101,11 +101,11 @@ function updateItems(currentBarHolder) {
     let buttonName = undefined
     let buttonState = undefined
     if (currentBarHolder === "Transactions") {
-            url = "http://127.0.0.1:8000" + '/transactions' + '/get_transactions_by_type'
+            url = window.path + '/transactions' + '/get_transactions_by_type'
             buttonState = window.transactionsBarButtonState
         }
     else if (currentBarHolder === "Categories") {
-            url = "http://127.0.0.1:8000" + '/categories' +'/get_categories_by_type'
+            url = window.path + '/categories' +'/get_categories_by_type'
             buttonState = window.categoriesBarButtonState
     }
 
@@ -132,11 +132,11 @@ function updateItems(currentBarHolder) {
 function deleteItem(item) {
     const typeName = item.querySelector('#idItemName').innerText
     let amount = 0.
-    let url = "http://127.0.0.1:8000" + '/categories/delete_category'
+    let url = window.path + '/categories/delete_category'
 
     if (window.currentBarHolder === "Transactions") {
         amount = item.querySelector('#idItemAmount').innerText
-        url = "http://127.0.0.1:8000" + '/transactions/delete_transaction'
+        url = window.path + '/transactions/delete_transaction'
     }
 
     fetch(url, {
