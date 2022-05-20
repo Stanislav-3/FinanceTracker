@@ -116,10 +116,10 @@ function updateItems(currentBarHolder) {
                             .addEventListener("click",() => {
                                 deleteItem(newNode)
                             })
-                        if (window.currentBarHolder === "Categories") {
-                            newNode.querySelector('#idItemRegroup')
-                                .addEventListener("click",() => {})
-                        }
+                        // if (window.currentBarHolder === "Categories") {
+                        //     newNode.querySelector('#idItemRegroup')
+                        //         .addEventListener("click",() => {})
+                        // }
 
                         itemsContainer.append(newNode)
                     }
