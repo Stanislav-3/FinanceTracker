@@ -55,7 +55,7 @@ export function barButtonClicked(button) {
 
     if (!document.URL.includes('/edit')) {
         updateItems(window.currentBarHolder)
-    } else {
+    } else if (window.currentBarHolder === 'Transactions') {
         addOptionsToSelect(document.getElementById('idCategory'))
     }
 }

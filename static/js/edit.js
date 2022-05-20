@@ -58,9 +58,9 @@ function initializeDateAndInformationInputs(category, amount, dateInput, informa
              body: JSON.stringify(props)
             }).then(response => {
                 response.json().then((obj) => {
-                    const props = obj['items']
-                    dateInput.value = props['date']
-                    informationInput.value = props['information']
+                    console.log(obj)
+                    dateInput.value = obj['date']
+                    informationInput.value = obj['information']
                 })
             })
 }
@@ -74,7 +74,7 @@ export function initialize(node) {
     if (node === undefined) {
         document.getElementById('idFooterButton')
             .addEventListener("click",() =>
-                saveChanges(currentParentUrl, {}));
+                validateAndSaveChanges(currentParentUrl, {}))
 
         if (type === 'transactions') {
             addOptionsToSelect(document.getElementById('idCategory'))
@@ -105,6 +105,7 @@ export function initialize(node) {
 
         amountInput.value = amount
         addOptionsToSelect(categorySelect, category)
+        initializeDateAndInformationInputs(category, amount, dateInput, informationInput)
 
         props = {
             'prevAmount': node.querySelector('#idItemAmount').innerText,
@@ -122,20 +123,55 @@ export function initialize(node) {
     console.log('props in initialize', props)
     document.getElementById('idFooterButton')
         .addEventListener("click",() => {
-            // if (window.currentBarHolder === "Transactions") {
-            //     const amount = document.getElementById('idAmount').value
-            //     if (window.transactionsBarButtonState === 'Expenses') {
-            //         if (amount >= 0) {
-            //             alert('Warning! Expenses amount should be < 0')
-            //         }
-            //     } else {
-            //         if (amount <= 0) {
-            //             alert('Warning! Income amount should be > 0')
-            //         }
-            //     }
-            // }
-            saveChanges(currentParentUrl, props)
+            validateAndSaveChanges(currentParentUrl, props)
         });
+}
+
+function validateAndSaveChanges(parentRootUrl = '', props) {
+     if (window.currentBarHolder === "Transactions") {
+         const amount = document.getElementById('idAmount').value
+         const date = document.getElementById('idDate').value
+
+
+         if (amount === "") {
+             alert('Fill in an amount!')
+             return
+         }
+         if (isNaN(amount)) {
+             alert('Invalid number!')
+             return
+         }
+         if (window.transactionsBarButtonState === 'Expenses') {
+             if (amount >= 0) {
+                 alert('Warning! Expenses amount should be < 0')
+                 return
+             }
+         } else {
+             if (amount <= 0) {
+                 alert('Warning! Income amount should be > 0')
+                 return
+             }
+         }
+         if (date === "") {
+            alert('Fill in a date!')
+            return
+        }
+     } else if (window.currentBarHolder === "Categories") {
+         const nameInput = document.getElementById('idName')
+         const imageInput = document.getElementById('idImage')
+
+         if (nameInput.value === "") {
+             alert('Fill in a category name!')
+             return
+         }
+         if (imageInput.value === "") {
+            alert('Load an image!')
+            return
+         }
+     }
+
+
+    saveChanges(parentRootUrl, props)
 }
 
 

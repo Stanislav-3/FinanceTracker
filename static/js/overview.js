@@ -1,17 +1,14 @@
 
 
-function mainPlot(json) {
-    json = json.items
-
+function mainPlot(items) {
 	let expenses = [], income = [];
-	json.forEach(row => {
+	items.forEach(row => {
 	        if (row.type === 'Expenses') {
 				expenses.push({x: row.date, y: row.amount});
 			} else if (row.type === 'Income') {
 				income.push({x: row.date, y: row.amount});
 			}
 	});
-    console.log([expenses, income]);
 
     const series = [
         {name: 'Expenses', points: expenses},
@@ -20,10 +17,9 @@ function mainPlot(json) {
     JSC.Chart('idMainPlot', { series: series })
 }
 
-function piePlot(json, type='Expenses') {
-    json = json.items
+function piePlot(items, type='Expenses') {
     let categories = {}
-	json.forEach(row => {
+	items.forEach(row => {
 	    if ((type === 'Expenses' && row.amount > 0)
             || (type === 'Income' && row.amount < 0)) {
         }
@@ -66,14 +62,35 @@ function piePlot(json, type='Expenses') {
 }
 
 
-export function plot() {
+export function plot(type='month') {
         fetch("http://127.0.0.1:8000" + '/overview' + '/get_fake_data')
             .then(response => {
                 response.json()
                     .then(obj => {
-                        mainPlot(obj)
-                        piePlot(obj, 'Expenses')
-                        piePlot(obj, 'Income')
+                        let items = obj.items
+                        if (type === 'week') {
+                            items = items.slice(0, 14)
+                        }
+
+                        mainPlot(items)
+                        piePlot(items, 'Expenses')
+                        piePlot(items, 'Income')
                     })
             })
 }
+
+export function initOverview() {
+    const barSelect = document.getElementById("idBarSelect")
+    console.log(barSelect)
+
+    barSelect.addEventListener('change', () => {
+        const value = barSelect.value
+        console.log(value)
+        plot(value)
+    })
+
+    barSelect.value = 'month'
+    barSelect.selectedIndex = 1
+    plot(barSelect.value)
+}
+

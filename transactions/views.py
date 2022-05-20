@@ -65,24 +65,22 @@ def save_edit(request):
         type = props['type']
         year, month, day = map(int, props['date'].split('-'))
         information = props['information']
+        print(props)
 
-        transaction = Transaction.objects.filter(amount=prevAmount)\
-            .filter(label=Category.objects.all().filter(name=prevLabel)[0])
-
-        if transaction.count() == 0:
-            print('new')
-            Transaction.objects.create(amount=amount,
-                                       type=type,
-                                       information=information,
-                                       date=datetime.date(year, month, day),
-                                       label=Category.objects.filter(name=label)[0])
-        else:
-            print('edit')
+        if prevLabel is not None:
+            categories = Category.objects.all().filter(name=prevLabel)
+            transaction = Transaction.objects.filter(amount=prevAmount).filter(label=categories[0])
             transaction.update(amount=amount,
                                type=type,
                                information=information,
                                date=datetime.date(year, month, day),
                                label=Category.objects.filter(name=label)[0])
+        else:
+            Transaction.objects.create(amount=amount,
+                                       type=type,
+                                       information=information,
+                                       date=datetime.date(year, month, day),
+                                       label=Category.objects.filter(name=label)[0])
 
     return JsonResponse({})
 
@@ -108,10 +106,12 @@ def get_inputs_data(request):
         return
 
     props = json.load(request)
+    print(props)
     amount = props['amount']
     category = props['category']
 
-    obj = Transaction.objects.filter(label=category).filter(amount=amount)
-    result = {'data': obj.date, 'information': obj.information}
+    categories = Category.objects.all().filter(name=category)
+    obj = Transaction.objects.filter(label=categories[0]).filter(amount=amount)[0]
+    result = {'date': obj.date, 'information': obj.information}
 
     return JsonResponse(result)

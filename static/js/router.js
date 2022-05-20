@@ -12,7 +12,7 @@ import {
 } from "./cookie.js";
 
 import {
-    plot
+    initOverview
 } from "./overview.js"
 
 
@@ -59,7 +59,7 @@ function redirect_to(arg) {
                         initialize(router.optional)
                     }
                     if (arg.includes('overview')) {
-                        plot()
+                        initOverview()
                     }
             });
 }
