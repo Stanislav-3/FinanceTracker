@@ -8,42 +8,51 @@
 </head>
 
 
-
-<body>
+<body id="idBody">
 <header>
+    <label for="toggle"> &#9776 </label>
+    <input type="checkbox" id="toggle" onclick="changeMenuState(this)"/>
     <p> Financial Tracker </p>
 </header>
 <main>
-    <div class="main_menu">
+    <div class="main_menu" id="idMainMenu">
         <p> Menu: </p>
         <nav>
             <ul>
-                <li><a href="/transactions"> Transactions </a></li>
-                <li><a href="/categories"> Categories </a></li>
-                <li><a href="/overview"> Overview </a></li>
+                <li><a id="idNavTransaction"> Transactions </a></li>
+                <li><a id="idNavCategories"> Categories </a></li>
+                <li><a id="idNavOverview"> Overview </a></li>
             </ul>
         </nav>
     </div>
-    <div class="main_div">
+    <div class="main_div" id="idMainDiv">
         <div class="bar">
-            <select>
+            <select id="idBarSelect">
                 <option value="week"> Week </option>
                 <option value="month"> Month </option>
             </select>
         </div>
         <div class="items">
             <div class="plot">
-                <canvas> </canvas>
+                <div id="idMainPlot"> </div>
             </div>
 
             <div class="pies">
-                <canvas> pie chart there </canvas>
-                <canvas> pie chart there </canvas>
+                <div id="idExpensesPie"> </div>
+                <div id="idIncomePie"> </div>
             </div>
         </div>
     </div>
 
 
 </main>
+<script src="https://code.jscharting.com/latest/jscharting.js"></script>
+<script type="module" src="{% static 'js/main.js'%}"> </script>
+<script type="module" src="{% static 'js/edit.js'%}"> </script>
+<script type="module" src="{% static 'js/router.js'%}"> </script>
+<script type="module" src="{% static 'js/states.js'%}"> </script>
+<script type="module" src="{% static 'js/overview.js'%}"> </script>
+<script src="{% static 'js/menuManager.js'%}"> </script>
 </body>
+
 </html>
