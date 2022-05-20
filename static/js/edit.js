@@ -66,6 +66,37 @@ function initializeDateAndInformationInputs(category, amount, dateInput, informa
 }
 
 
+function transactionInit(node) {
+    const amountInput = document.getElementById('idAmount')
+    const categorySelect = document.getElementById('idCategory')
+    const dateInput = document.getElementById('idDate')
+    const informationInput = document.getElementById('idInformation')
+
+    const category = node.querySelector('#idItemName').innerText
+    const amount = node.querySelector('#idItemAmount').innerText
+
+    amountInput.value = amount
+    addOptionsToSelect(categorySelect, category)
+    initializeDateAndInformationInputs(category, amount, dateInput, informationInput)
+
+    return {
+        'prevAmount': node.querySelector('#idItemAmount').innerText,
+        'prevLabel': node.querySelector('#idItemName').innerText
+    }
+}
+
+
+function categoryInit(node) {
+    const itemName = node.querySelector('#idItemName')
+
+    const nameField = document.getElementById('idName')
+    nameField.value = itemName.innerText
+
+    return {
+        'prevItemName' : itemName.innerText
+    }
+}
+
 export function initialize(node) {
     const type = window.currentBarHolder.toLowerCase()
     const currentParentUrl = `/${type}`
@@ -93,34 +124,13 @@ export function initialize(node) {
     footerButton.append(` Save ${type}`)
 
     let props = {}
-    console.log('initialize', type)
+
     if (type === 'transactions') {
-        const amountInput = document.getElementById('idAmount')
-        const categorySelect = document.getElementById('idCategory')
-        const dateInput = document.getElementById('idDate')
-        const informationInput = document.getElementById('idInformation')
-
-        const category = node.querySelector('#idItemName').innerText
-        const amount = node.querySelector('#idItemAmount').innerText
-
-        amountInput.value = amount
-        addOptionsToSelect(categorySelect, category)
-        initializeDateAndInformationInputs(category, amount, dateInput, informationInput)
-
-        props = {
-            'prevAmount': node.querySelector('#idItemAmount').innerText,
-            'prevLabel': node.querySelector('#idItemName').innerText
-        }
+        props = transactionInit(node)
     } else if (type === 'categories') {
-        const itemName = node.querySelector('#idItemName')
-
-        const nameField = document.getElementById('idName')
-        nameField.value = itemName.innerText
-
-        props = {'prevItemName' : itemName.innerText}
+        props = categoryInit(node)
     }
 
-    console.log('props in initialize', props)
     document.getElementById('idFooterButton')
         .addEventListener("click",() => {
             validateAndSaveChanges(currentParentUrl, props)
@@ -175,26 +185,27 @@ function validateAndSaveChanges(parentRootUrl = '', props) {
 }
 
 
+function post_data(parentRootUrl, url, props) {
+    fetch(url, {
+        method: 'post',
+        credentials: "same-origin",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            "X-CSRFToken": getCookie("csrftoken")
+        },
+         body: JSON.stringify(props)
+        }).then(response => {
+            response.json().then( () => {
+                router.loadRoute(parentRootUrl)
+            })
+        })
+}
+
+
 export function saveChanges(parentRootUrl = '', props) {
     let url = "http://127.0.0.1:8000" + parentRootUrl + '/save_edit'
-    console.log('props in saveChanges', props)
-    function post_data(url, props) {
-        fetch(url, {
-            method: 'post',
-            credentials: "same-origin",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                "X-CSRFToken": getCookie("csrftoken")
-            },
-             body: JSON.stringify(props)
-            }).then(response => {
-                response.json().then( () => {
-                    router.loadRoute(parentRootUrl)
-                })
-            })
-    }
 
     if (window.currentBarHolder === 'Categories') {
         let prevItemName = props['prevItemName']
@@ -215,7 +226,7 @@ export function saveChanges(parentRootUrl = '', props) {
                 "image": image,
                 "type": window.categoriesBarButtonState
             }
-            post_data(url, _props)
+            post_data(parentRootUrl, url, _props)
         })
         reader.readAsDataURL(document.getElementById('idImage').files[0])
 
@@ -238,6 +249,6 @@ export function saveChanges(parentRootUrl = '', props) {
             'information': document.getElementById('idInformation').value,
         }
 
-        post_data(url, props_)
+        post_data(parentRootUrl, url, props_)
     }
 }

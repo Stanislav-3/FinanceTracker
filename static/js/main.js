@@ -12,6 +12,18 @@ import {
 } from "./cookie.js";
 
 
+function styleButton(active, passive) {
+    active.style.color = '#32cd32';
+    passive.style.color = 'black';
+
+    active.style.borderBottomColor = '#32cd32';
+    active.style.borderBottomWidth = '3px';
+    active.style.borderBottomStyle = 'solid';
+
+    passive.style.borderBottomStyle = 'none';
+}
+
+
 export function barButtonClicked(button) {
     const expensesButton = document.getElementById('idExpensesButton')
     const incomeButton = document.getElementById('idIncomeButton')
@@ -27,14 +39,8 @@ export function barButtonClicked(button) {
             window.categoriesBarButtonState = 'Expenses'
         }
 
-        expensesButton.style.color = '#32cd32';
-        incomeButton.style.color = 'black';
+        styleButton(expensesButton, incomeButton)
 
-        expensesButton.style.borderBottomColor = '#32cd32';
-        expensesButton.style.borderBottomWidth = '3px';
-        expensesButton.style.borderBottomStyle = 'solid';
-
-        incomeButton.style.borderBottomStyle = 'none';
     } else if (button === 'Income') {
         if (currentBarHolder === "Transactions") {
             window.transactionsBarButtonState = 'Income'
@@ -43,20 +49,49 @@ export function barButtonClicked(button) {
             window.categoriesBarButtonState = 'Income'
         }
 
-        expensesButton.style.color='black';
-        incomeButton.style.color='#32cd32';
-
-        incomeButton.style.borderBottomColor = '#32cd32';
-        incomeButton.style.borderBottomWidth = '3px';
-        incomeButton.style.borderBottomStyle = 'solid';
-
-        expensesButton.style.borderBottomStyle = 'none';
+       styleButton(incomeButton, expensesButton)
     }
 
     if (!document.URL.includes('/edit')) {
         updateItems(window.currentBarHolder)
     } else if (window.currentBarHolder === 'Transactions') {
         addOptionsToSelect(document.getElementById('idCategory'))
+    }
+}
+
+
+function fillItems(obj) {
+    const itemsContainer = document.getElementById('idItems')
+    const itemContainer = document.getElementById('idItem')
+    const imgContainer = itemContainer.querySelector('#idItemImage')
+    const nameContainer = itemContainer.querySelector('#idItemName')
+    let priceContainer
+
+    if (window.currentBarHolder === "Transactions") {
+        priceContainer = itemContainer.querySelector('#idItemAmount')
+    }
+
+    itemsContainer.innerHTML = ""
+    const items = obj['items']
+    for (let i = 0; i < items.length; i++) {
+        nameContainer.textContent = items[i]['name']
+        imgContainer.src = "http://127.0.0.1:8000/" + items[i]['image_name']
+
+        if (window.currentBarHolder === "Transactions" && priceContainer !== null) {
+            priceContainer.textContent = items[i]['amount']
+        }
+        const newNode = itemContainer.cloneNode(true)
+
+        newNode.querySelector('#idItemEdit')
+            .addEventListener("click",() => {
+                router.load_optional(newNode)
+                router.loadRoute('/' + window.currentBarHolder.toLowerCase() + '/edit')
+            })
+        newNode.querySelector('#idItemDelete')
+            .addEventListener("click",() => {
+                deleteItem(newNode)
+            })
+        itemsContainer.append(newNode)
     }
 }
 
@@ -73,6 +108,7 @@ function updateItems(currentBarHolder) {
             url = "http://127.0.0.1:8000" + '/categories' +'/get_categories_by_type'
             buttonState = window.categoriesBarButtonState
     }
+
     fetch(url, {
         method: 'post',
         credentials: "same-origin",
@@ -87,43 +123,7 @@ function updateItems(currentBarHolder) {
          })
         }).then(response => {
             response.json().then(
-                obj => {
-                    const itemsContainer = document.getElementById('idItems')
-                    const itemContainer = document.getElementById('idItem')
-                    const imgContainer = itemContainer.querySelector('#idItemImage')
-                    const nameContainer = itemContainer.querySelector('#idItemName')
-                    let priceContainer = undefined
-                    if (window.currentBarHolder === "Transactions") {
-                        priceContainer = itemContainer.querySelector('#idItemAmount')
-                    }
-                    itemsContainer.innerHTML = ""
-                    const items = obj['items']
-                    for (let i = 0; i < items.length; i++) {
-                        nameContainer.textContent = items[i]['name']
-                        imgContainer.src = "http://127.0.0.1:8000/" + items[i]['image_name']
-
-                        if (window.currentBarHolder === "Transactions" && priceContainer !== null) {
-                            priceContainer.textContent = items[i]['amount']
-                        }
-                        const newNode = itemContainer.cloneNode(true)
-
-                        newNode.querySelector('#idItemEdit')
-                            .addEventListener("click",() => {
-                                router.load_optional(newNode)
-                                router.loadRoute('/' + window.currentBarHolder.toLowerCase() + '/edit')
-                            })
-                        newNode.querySelector('#idItemDelete')
-                            .addEventListener("click",() => {
-                                deleteItem(newNode)
-                            })
-                        // if (window.currentBarHolder === "Categories") {
-                        //     newNode.querySelector('#idItemRegroup')
-                        //         .addEventListener("click",() => {})
-                        // }
-
-                        itemsContainer.append(newNode)
-                    }
-                }
+                obj => { fillItems(obj) }
             )
         })
 }
