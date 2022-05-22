@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-q#*!iyo89u1w2f)1v7%x$jw8#y6^4l@@sv))s2983pn)35=u8b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['finance-tracker-stankore.herokuapp.com']
 
 
 # Application definition
