@@ -28,4 +28,5 @@ You can record all your spendings and income to understand where does your money
 </ul>
 
 **Design:** [Figma](https://www.figma.com/file/TPZwA8wjqQpHdTnGWfaf2O/FinanceTracker?node-id=0%3A1) <br>
+**Deploy:** [Click here](https://finance-tracker-stankore.herokuapp.com/categories/) <br>
 **Author:** Кореневский Станислав Александрович, г. 953501

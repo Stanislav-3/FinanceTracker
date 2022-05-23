@@ -18,7 +18,7 @@ import {
 
 
 function redirect_to(arg) {
-    fetch("http://127.0.0.1:8000" + arg)
+    fetch(window.serverUrl + arg)
                 .then((response) => response.text())
                 .then((text) => {
                     const otherDoc = document.implementation.createHTMLDocument('title').documentElement;

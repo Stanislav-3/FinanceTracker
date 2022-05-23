@@ -63,7 +63,7 @@ function piePlot(items, type='Expenses') {
 
 
 export function plot(type='month') {
-        fetch("http://127.0.0.1:8000" + '/overview' + '/get_fake_data')
+        fetch(window.serverUrl + '/overview' + '/get_fake_data')
             .then(response => {
                 response.json()
                     .then(obj => {
